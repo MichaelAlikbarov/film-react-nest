@@ -1,12 +1,17 @@
-import { Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { OrderDto, OrderResponseDto } from './dto/order.dto';
 import { FilmsRepository } from '../repository/films.repository';
+import { FilmDto } from 'src/films/dto/films.dto';
 
 @Injectable()
 export class OrderService {
   constructor(private readonly filmsRepo: FilmsRepository) {}
   async createOrder(tickets: OrderDto[]): Promise<OrderResponseDto> {
-    const updatedFilms = new Map<string, any>();
+    const updatedFilms = new Map<string, FilmDto>();
     const orderTickets = [];
 
     for (const ticket of tickets) {
@@ -24,14 +29,14 @@ export class OrderService {
       if (!film) {
         film = await this.filmsRepo.findById(filmId);
         if (!film) {
-          console.log(`Фильм не найден: ${filmId}`);
+          throw new NotFoundException(`Фильм не найден: ${filmId}`);
         }
         updatedFilms.set(filmId, film);
       }
 
       const schedule = film.schedule.find((s) => s.id === sessionId);
       if (!schedule) {
-        console.log(`Сеанс не найден: ${sessionId}`);
+        throw new NotFoundException(`Сеанс не найден: ${sessionId}`);
       }
 
       if (!Array.isArray(schedule.taken)) {
@@ -39,7 +44,7 @@ export class OrderService {
       }
 
       if (schedule.taken.includes(seatKey)) {
-        console.log(`{ 'error': Место уже занято: ${seatKey} }`);
+        throw new ConflictException(`{ 'error': Место ${seatKey} занято }`);
       }
 
       schedule.taken.push(seatKey);
