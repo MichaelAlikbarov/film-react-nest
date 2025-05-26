@@ -17,8 +17,6 @@ export class FilmsPostgresRepository implements IFilmRepository {
 
   async findAll(): Promise<IFilm[]> {
     const films = await this.filmRepo.find({ relations: ['schedule'] });
-    console.log('test test');
-    console.log(films);
     return films.map((film) => this.mapFilmEntityToFilm(film));
   }
 
