@@ -9,7 +9,6 @@ export class FilmsService {
   async getAllFilms(): Promise<FilmDto[]> {
     await this.filmsRepo.findAll();
     const dataFilms = await this.filmsRepo.findAll();
-    console.log(dataFilms);
     return dataFilms;
   }
 
