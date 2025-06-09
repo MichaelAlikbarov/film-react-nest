@@ -37,6 +37,9 @@ export class DatabaseModule {
               url: config.get<string>('database.postgresUrl'),
               entities: [FilmEntity, ScheduleEntity],
               synchronize: false,
+              extra: {
+                charset: 'win1251',
+              },
             };
           }
 
