@@ -6,9 +6,6 @@ on:
   pull_request:
     branches: ['main']
 
-  env:
-    GHCR_USER: ${{ github.repository_owner }}
-
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -20,6 +17,9 @@ jobs:
     steps:
       - name: Force lowercase for GHCR_USER
         run: echo "GHCR_USER=${GHCR_USER,,}" >> $GITHUB_ENV
+        env:
+          GHCR_USER: ${{ github.repository_owner }}
+      - run: echo "${GHCR_USER}"
 
       - name: Checkout repository
         uses: actions/checkout@v4
