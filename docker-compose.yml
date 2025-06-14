@@ -1,0 +1,70 @@
+services:
+  frontend:
+    build:
+      context: ./frontend
+    volumes:
+      - frontend-dist:/app/dist
+    command: echo "Frontend built and shared via volume"
+    depends_on:
+      - backend
+
+  backend:
+    build:
+      context: ./backend
+    environment:
+      - NODE_ENV=production
+      - DATABASE_DRIVER=${DATABASE_DRIVER}
+      - DATABASE_POSTGRES_URL=${DATABASE_POSTGRES_URL}
+    networks:
+      - app-network
+    depends_on:
+      - postgres
+
+  nginx:
+    build:
+      context: ./nginx
+    ports:
+      - "80:80"
+    volumes:
+      - frontend-dist:/usr/share/nginx/html
+    depends_on:
+      - frontend
+    networks:
+      - app-network
+
+  postgres:
+    image: postgres:16
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      # - ./postgresdata/:/docker-entrypoint-initdb.d/00-init.sql:ro
+      # - ./postgresdata/:/docker-entrypoint-initdb.d/01-init-prac.sql:ro
+      - ./docker-entrypoint-initdb.d/:/docker-entrypoint-initdb.d
+    networks:
+      - app-network
+
+  pgadmin:
+    image: dpage/pgadmin4
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+    ports:
+      - "5050:80"
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+    networks:
+      - app-network
+
+volumes:
+  frontend-dist:
+  pgdata:
+  pgadmin-data:
+
+networks:
+  app-network:
+    driver: bridge

@@ -35,6 +35,7 @@ export class DatabaseModule {
             return {
               type: 'postgres',
               url: config.get<string>('database.postgresUrl'),
+              host: config.get<string>('database.host'),
               entities: [FilmEntity, ScheduleEntity],
               synchronize: false,
               extra: {
