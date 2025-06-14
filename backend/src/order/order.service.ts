@@ -4,12 +4,12 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { OrderDto, OrderResponseDto } from './dto/order.dto';
-import { FilmsRepository } from '../repository/films.repository';
 import { FilmDto } from 'src/films/dto/films.dto';
+import { FilmsPostgresRepository } from 'src/repository/films-postgres.repository';
 
 @Injectable()
 export class OrderService {
-  constructor(private readonly filmsRepo: FilmsRepository) {}
+  constructor(private readonly filmsRepo: FilmsPostgresRepository) {}
   async createOrder(tickets: OrderDto[]): Promise<OrderResponseDto> {
     const updatedFilms = new Map<string, FilmDto>();
     const orderTickets = [];

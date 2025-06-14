@@ -1,22 +1,37 @@
-export class ScheduleItem {
-  id: string;
-  daytime: string; // ISO string
-  hall: number;
-  rows: number;
-  seats: number;
-  price: number;
-  taken?: string[]; // Массив занятых мест, например ["1_5", "2_7"]
-}
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import { ScheduleEntity } from './schedule.entity';
 
-export class Film {
+@Entity('films')
+export class FilmEntity {
+  @PrimaryGeneratedColumn('uuid')
   id: string;
+
+  @Column()
   title: string;
+
+  @Column()
   rating: number;
+
+  @Column()
   director: string;
+
+  @Column('simple-array')
   tags: string[];
-  image?: string;
-  cover?: string;
-  about?: string;
-  description?: string;
-  schedule: ScheduleItem[];
+
+  @Column('text')
+  about: string;
+
+  @Column('text')
+  description: string;
+
+  @Column()
+  image: string;
+
+  @Column()
+  cover: string;
+
+  @OneToMany(() => ScheduleEntity, (schedule) => schedule.film, {
+    cascade: true,
+  })
+  schedule: ScheduleEntity[];
 }
