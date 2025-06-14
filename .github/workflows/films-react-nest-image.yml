@@ -12,7 +12,13 @@ jobs:
     permissions:
       contents: read
       packages: write
+    env:
+      GHCR_USER: ${{ github.repository_owner }}
+
     steps:
+      - name: Force lowercase for GHCR_USER
+        run: echo "GHCR_USER=${GHCR_USER,,}" >> $GITHUB_ENV
+
       - name: Checkout repository
         uses: actions/checkout@v4
 
