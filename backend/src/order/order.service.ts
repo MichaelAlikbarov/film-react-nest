@@ -4,8 +4,8 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { OrderDto, OrderResponseDto } from './dto/order.dto';
-import { FilmDto } from 'src/films/dto/films.dto';
-import { FilmsPostgresRepository } from 'src/repository/films-postgres.repository';
+import { FilmDto } from '../films/dto/films.dto';
+import { FilmsPostgresRepository } from '../repository/films-postgres.repository';
 
 @Injectable()
 export class OrderService {
