@@ -4,8 +4,6 @@ services:
     volumes:
       - frontend-dist:/app/dist
     command: echo "Frontend built and shared via volume"
-    depends_on:
-      - backend
 
   backend:
     image: ghcr.io/${OWNER}/film-backend:latest
