@@ -1,0 +1,63 @@
+name: Build and Push films-react-nest Images
+
+on:
+  push:
+    branches: ['review-3']
+  pull_request:
+    branches: ['main']
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Force lowercase for GHCR_USER
+        run: echo "GHCR_USER=${GHCR_USER,,}" >> $GITHUB_ENV
+        env:
+          GHCR_USER: ${{ github.repository_owner }}
+      - run: echo "${GHCR_USER}"
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ env.GHCR_USER }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # Frontend
+      - name: Build and Push Frontend Image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./frontend
+          push: true
+          tags: ghcr.io/${{ env.GHCR_USER }}/film-frontend:latest
+
+      # Backend
+      - name: Build and Push Backend Image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./backend
+          push: true
+          tags: ghcr.io/${{ env.GHCR_USER }}/film-backend:latest
+
+      # Nginx
+      - name: Build and Push Nginx Image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./nginx
+          push: true
+          tags: ghcr.io/${{ env.GHCR_USER }}/film-nginx:latest
+
